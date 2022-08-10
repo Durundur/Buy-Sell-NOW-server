@@ -6,7 +6,7 @@ const fs = require('fs');
 
 
 const app = express()
-const PORT = process.env.PORT || 7000
+const PORT = process.env.PORT || 7000 || $PORT
 
 const connectDB = require('./db')
 const adsPath = require('./routes/v1/api/ads')
