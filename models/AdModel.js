@@ -10,9 +10,11 @@ const adSchema = new mongoose.Schema({
     creationDate: {
         type: String
     },
-    image: {
-        type: String
-    },
+    images: [{
+        destination: String,
+        filename: String,
+        url: String
+    }],
     price: {
         type: Number
     },
