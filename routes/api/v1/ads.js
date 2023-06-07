@@ -4,8 +4,10 @@ const router = express.Router()
 const AdModel = require('../../../models/AdModel')
 
 router.get('/', async function (req,res, next){
+  const page = req.query.p || 1;
+  const adsPerPage = 10;
   try{
-    const adsDocs = await AdModel.find()
+    const adsDocs = await AdModel.find().skip(adsPerPage * (page-1)).limit(adsPerPage)
     res.status(200).json(adsDocs)
   }
   catch(error){ 
@@ -44,7 +46,6 @@ router.delete('/:id', async function(req,res, next){
 })
 
 router.post('/', async function(req,res, next){
-    console.log(req.body)
     const newAdDoc = new AdModel(req.body)
     console.log(newAdDoc)
     try{

@@ -5,7 +5,7 @@ const fs = require('fs');
 const db = require('./utils/db')
 const adsRoutes = require('./routes/api/v1/ads')
 const app = express()
-const PORT = process.env.PORT || 7000 || $PORT
+const PORT = process.env.PORT || 7000 || $PORT 
 const errorHandler = require('./utils/errorHandler')
 
 
