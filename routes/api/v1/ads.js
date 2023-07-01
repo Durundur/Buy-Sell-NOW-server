@@ -1,4 +1,3 @@
-const c = require('config')
 const express = require('express')
 const router = express.Router()
 const AdModel = require('../../../models/AdModel')

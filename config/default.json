@@ -1,3 +1,4 @@
 {
-    "dbURI": "mongodb+srv://admin:admin@db.iy4yedf.mongodb.net/?retryWrites=true&w=majority"
+    "dbURI": "mongodb+srv://admin:admin@db.iy4yedf.mongodb.net/?retryWrites=true&w=majority",
+    "secret" : "keyboard cat1LM3)CD*zAGpx1"
 }
