@@ -1,6 +1,8 @@
 const express = require('express')
 const router = express.Router()
 const AdModel = require('../../../models/AdModel')
+const ensureLoggedIn = require('../../../utils/ensureLoggedIn')
+
 
 router.get('/', async function (req,res, next){
   const page = req.query.p || 1;

@@ -18,7 +18,7 @@ const PORT = process.env.PORT || 7000 || $PORT
 
 
 app.use(express.static('static'))
-app.use(cors({ origin: "https://buysellnow.netlify.app", credentials: true }));
+app.use(cors({ origin: ["https://buysellnow.netlify.app", "http://localhost:3000"], credentials: true }));
 app.use(express.json());
 
 
@@ -29,18 +29,19 @@ app.listen(PORT, () => {
 })
 app.set('trust proxy', 1)
 app.use(session({
-    genid: function (req) {
+    genid: function(req) {
         return uuidv4();
     },
     secret: config.get('secret'),
     resave: false,
     saveUninitialized: false,
     cookie: { maxAge: 60 * 60 * 1000,
-         sameSite: 'none',
-         secure: true,
+        //  sameSite: 'none',
+        //  secure: true,
     },
     store: MongoStore.create({
-        client: mongoose.connection.getClient()
+        client: mongoose.connection.getClient(),
+        stringify: false
     })
 }));
 
