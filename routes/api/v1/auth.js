@@ -1,43 +1,66 @@
+const ensureAuthenticated = require('../../../utils/ensureAuthenticated')
 const express = require('express');
 const router = express.Router();
 const passport = require('passport')
 const LocalStrategy = require('passport-local-mongoose').Strategy
 const UserModel = require('../../../models/UserModel')
 
+
 passport.use(UserModel.createStrategy());
-passport.serializeUser(UserModel.serializeUser(function(user, done){return done(null, user_id)}));
-passport.deserializeUser(UserModel.deserializeUser(function(id, done){return done(null, getUserById(id))}));
 
+passport.serializeUser(function (user, done) {
+	done(null, user._id)
+});
 
-const validateSession = (request) => {
-	if(request.session.passport === null || request.session.passport === undefined) return false
-	return true
-}
+passport.deserializeUser(function (_id, done) {
+	UserModel.findById({ _id: _id }, function (err, user) {
+		done(err, user)
+	})
+});
 
-router.get('/isAuth', async (req, res) => {
-	let user = req.session.passport
-	if (user) {
-		return res.json({ message: "Authenticated Successfully", user });
-	}else {
-		return res.status(401).json({ message: "Unauthorized" });
-	}
+router.get('/ensure-auth', ensureAuthenticated, function(req,res, next){
+	res.status(200).send({userId: req.session.passport.user})
 })
 
-router.post('/login', passport.authenticate('local'), function (req, res) {
-	let user = { userId: req.user._id }
-	req.session.passport = user;
-	res.status(200).send({ message: "Authenticated Successfully", user: user})
-	res.end();
+
+
+router.post('/login', function (req, res, next) {
+	passport.authenticate('local', function(err, user, info, status) {
+		if (err) {
+			return next(err);
+		}
+		if (!user) {
+			return next({...info, status: 401});
+		}
+		req.login(user, loginErr => {
+			if (loginErr) {
+				return next(loginErr);
+			}
+		return res.status(200).send({ message: 'Authentication succeeded', userId: req.session.passport.user, avatar: user?.avatar, redirect: '/' });
+		});
+	})(req, res, next);
 });
+
+
+router.post('/register', function (req, res, next) {
+	UserModel.register(new UserModel({ username: req.body.username }), req.body.password, function (err, user) {
+		if (err) {
+			return next(err);
+		}
+		next()
+	})
+}, function (req, res, next) {
+	const authenticate = passport.authenticate("local")
+	authenticate(req, res, function () {
+		res.status(200).send({ message: "Authentication succeeded", userId: req.session.passport.user, redirect: '/' })
+	})
+})
 
 
 router.delete('/logout', function (req, res) {
-	if(validateSession(req)){
-		res.clearCookie("connect.sid").end();
-		req.session.destroy();
-	}
+	req.session.destroy();
+	res.clearCookie("session_id").end();
 });
-
 
 
 module.exports = router
