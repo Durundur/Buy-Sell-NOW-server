@@ -65,7 +65,8 @@ app.use('/api/v1/settings/', settingsRoutes)
 
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:3000",
+        origin: ["https://buysellnow.netlify.app", "http://localhost:3000"], 
+        credentials: true ,
     }
 });
 
