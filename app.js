@@ -89,9 +89,10 @@ io.on('connection', (socket) => {
             author: author
         }
         try{
-            await ConversationChatModel.findOneAndUpdate({_id: conversationId}, {$push: {messages: newChatMessage}}, { new: true })
-            await ConversationModel.findOneAndUpdate({_id: conversationId}, {$set: {lastMessage: message}});
-            socket.to(conversationId.toString()).emit('room message', newChatMessage);
+            const newMessage = await ConversationChatModel.findOneAndUpdate({_id: conversationId}, {$push: {messages: newChatMessage}}, { new: true })
+            const lastNewMessage = newMessage.messages[(newMessage.messages.length)-1]
+            await ConversationModel.findOneAndUpdate({_id: conversationId}, {$set: {lastMessage: lastNewMessage}});
+            socket.to(conversationId.toString()).emit('room message', lastNewMessage);
         }
         catch(e){
             console.log(e);

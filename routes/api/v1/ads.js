@@ -188,9 +188,9 @@ router.delete('/:id', ensureAuthenticated, async function (req, res, next) {
   let requestUserId = req.session.passport.user.toString();
   try {
     const ad = await AdModel.findById(req.params.id);
-    if (ad.advertiser._id === requestUserId) {
+    if ((ad.advertiser._id).toString() === requestUserId) {
       await AdModel.findByIdAndDelete(req.params.id);
-      res.status(200).send({ message: 'Ad has been deleted successfully', redirect: '/' })
+      res.status(200).send({ message: 'Ad has been deleted successfully' })
     } else {
       res.status(403).send({ message: 'You are not authorized', redirect: '/logowanie' });
     }
