@@ -20,8 +20,8 @@ const ConversationModel = require('./models/ConversationModel');
 const app = express();
 const PORT = process.env.PORT || 7000 || $PORT;
 
-
-
+const formidableMiddleware = require('express-formidable');
+app.use(formidableMiddleware());
 
 app.use(express.static('static'));
 app.use(cors({ origin: ["https://buysellnow.netlify.app", "http://localhost:3000"], credentials: true }));
@@ -65,20 +65,20 @@ app.use('/api/v1/settings/', settingsRoutes);
 
 const io = new Server(server, {
     cors: {
-        origin: ["https://buysellnow.netlify.app", "http://localhost:3000"], 
-        credentials: true ,
+        origin: ["https://buysellnow.netlify.app", "http://localhost:3000"],
+        credentials: true,
     }
 });
 
 io.on('connection', (socket) => {
-    
+
     socket.on('join room', (conversationId, callback) => {
-        if(!socket.rooms.has(conversationId.toString())){
-            socket.rooms.forEach((room)=>{
+        if (!socket.rooms.has(conversationId.toString())) {
+            socket.rooms.forEach((room) => {
                 socket.leave(room.toString());
             })
             socket.join(conversationId.toString());
-            callback({status: 'ok'});
+            callback({ status: 'ok' });
         }
     })
 
@@ -88,15 +88,15 @@ io.on('connection', (socket) => {
             message: message,
             author: author
         }
-        try{
-            const newMessage = await ConversationChatModel.findOneAndUpdate({_id: conversationId}, {$push: {messages: newChatMessage}}, { new: true })
-            const lastNewMessage = newMessage.messages[(newMessage.messages.length)-1]
-            await ConversationModel.findOneAndUpdate({_id: conversationId}, {$set: {lastMessage: lastNewMessage}});
+        try {
+            const newMessage = await ConversationChatModel.findOneAndUpdate({ _id: conversationId }, { $push: { messages: newChatMessage } }, { new: true })
+            const lastNewMessage = newMessage.messages[(newMessage.messages.length) - 1]
+            await ConversationModel.findOneAndUpdate({ _id: conversationId }, { $set: { lastMessage: lastNewMessage } });
             socket.to(conversationId.toString()).emit('room message', lastNewMessage);
         }
-        catch(e){
+        catch (e) {
             console.log(e);
-        } 
+        }
     })
 
 });
