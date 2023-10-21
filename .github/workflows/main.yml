@@ -1,0 +1,12 @@
+name: Node.js CI
+
+on:
+  push:
+    branches: ["main", "dev"]
+jobs:  
+  run-server:
+    runs-on: self-hosted
+    steps:
+    - uses: actions/checkout@v2
+    - run: npm install
+    - run: pm2 restart buysellnowapi
