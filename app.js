@@ -20,8 +20,7 @@ const ConversationModel = require('./models/ConversationModel');
 const app = express();
 const PORT = process.env.PORT || 7000 || $PORT;
 
-const formidableMiddleware = require('express-formidable');
-app.use(formidableMiddleware());
+
 
 app.use(express.static('static'));
 app.use(cors({ origin: ["https://buysellnow.netlify.app", "http://localhost:3000"], credentials: true }));
@@ -44,8 +43,8 @@ app.use(session({
     name: 'session_id',
     cookie: {
         maxAge: 60 * 60 * 1000 * 24,
-         sameSite: 'none',
-         secure: true,
+        // sameSite: 'none',
+        // secure: true,
     },
     store: MongoStore.create({
         client: mongoose.connection.getClient(),

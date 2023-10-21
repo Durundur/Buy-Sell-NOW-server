@@ -7,6 +7,7 @@ const UserModel = require('../../../models/UserModel');
 const ADS_PER_PAGE = 5;
 const uploadImages = require('../../../utils/uploadImages')
 
+const formidableMiddleware = require('express-formidable');
 
 
 router.get('/search/:mainCatParam?/:subCatParam?/:subSubCatParam?', async function (req, res, next) {
@@ -169,7 +170,7 @@ router.get('/:id', async function (req, res, next) {
 
 
 
-router.put('/:id', ensureAuthenticated, async function (req, res, next) {
+router.put('/:id', ensureAuthenticated, formidableMiddleware(), async function (req, res, next) {
   let requestUserId = req.session.passport.user.toString();
   try {
     const ad = await AdModel.findById(req.params.id);
@@ -204,7 +205,7 @@ router.delete('/:id', ensureAuthenticated, async function (req, res, next) {
   }
 })
 
-router.post('/', ensureAuthenticated, async function (req, res, next) {
+router.post('/', ensureAuthenticated, formidableMiddleware(), async function (req, res, next) {
   let requestUserId = req.session.passport.user.toString();
   const newAd = new AdModel(req.body)
   newAd.advertiser._id = requestUserId;
