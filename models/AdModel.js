@@ -162,7 +162,7 @@ const AdSchema = mongoose.Schema({
         condition: {
             type: String,
             enum: {
-                values: ['uszkodzony', 'nieuszkodzony'],
+                values: ['uszkodzony', 'nieuszkodzony', 'nowy', 'używany'],
             },
         },
         transmission: {

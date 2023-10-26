@@ -207,7 +207,10 @@ router.delete('/:id', ensureAuthenticated, async function (req, res, next) {
 
 router.post('/', ensureAuthenticated, formidableMiddleware(), async function (req, res, next) {
   let requestUserId = req.session.passport.user.toString();
-  const newAd = new AdModel(req.body)
+  const newAd = new AdModel();
+  const filesToUpload = req.files;
+  const uploadedFilesUrls = await uploadImages(filesToUpload, newAd._id);
+  newAd.$set({...req.fields, ...uploadedFilesUrls});
   newAd.advertiser._id = requestUserId;
   try {
     const newAdDoc = await newAd.save();
