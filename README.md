@@ -6,5 +6,5 @@ REST API backend for `buy-sell-now` web application build with:
 - passport
 - socket io
 - connect-mongo
-
-Authorization is based on sessions  
+  
+Authentication is based on cookie sessions  
