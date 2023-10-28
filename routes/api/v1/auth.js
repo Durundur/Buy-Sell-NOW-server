@@ -19,7 +19,8 @@ passport.deserializeUser(function (_id, done) {
 });
 
 router.get('/ensure-auth', ensureAuthenticated, function(req,res, next){
-	res.status(200).send({userId: req.session.passport.user})
+	const user = UserModel.findById(req.session.passport.user);
+	res.status(200).send({userId: req.session.passport.user, avatar: user?.avatar})
 })
 
 
@@ -49,7 +50,7 @@ router.post('/register', function (req, res, next) {
 		next()
 	})
 }, function (req, res, next) {
-	const authenticate = passport.authenticate("local")
+	const authenticate = passport.authenticate("local");
 	authenticate(req, res, function () {
 		res.status(200).send({ message: "Authentication succeeded", userId: req.session.passport.user, redirect: '/' })
 	})
