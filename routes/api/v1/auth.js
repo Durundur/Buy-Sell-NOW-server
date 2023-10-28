@@ -18,9 +18,10 @@ passport.deserializeUser(function (_id, done) {
 	})
 });
 
-router.get('/ensure-auth', ensureAuthenticated, function(req,res, next){
-	const user = UserModel.findById(req.session.passport.user);
-	res.status(200).send({userId: req.session.passport.user, avatar: user?.avatar})
+router.get('/ensure-auth', ensureAuthenticated, async function(req,res, next){
+	const userId = req.session.passport.user.toString();
+	const user = await UserModel.findById(userId);
+	res.status(200).send({userId: userId, avatar: user?.avatar, message: 'You are authorized', status: 200, success: true})
 })
 
 
@@ -36,7 +37,7 @@ router.post('/login', function (req, res, next) {
 			if (loginErr) {
 				return next(loginErr);
 			}
-		return res.status(200).send({ message: 'Authentication succeeded', userId: req.session.passport.user, avatar: user?.avatar, redirect: '/' });
+		return res.status(200).send({ status: 200, success: true, message: 'Authentication succeeded', userId: req.session.passport.user, avatar: user?.avatar, redirect: '/' });
 		});
 	})(req, res, next);
 });
@@ -52,7 +53,7 @@ router.post('/register', function (req, res, next) {
 }, function (req, res, next) {
 	const authenticate = passport.authenticate("local");
 	authenticate(req, res, function () {
-		res.status(200).send({ message: "Authentication succeeded", userId: req.session.passport.user, redirect: '/' })
+		res.status(200).send({status: 200, success: true, message: "Authentication succeeded", userId: req.session.passport.user, redirect: '/' })
 	})
 })
 
