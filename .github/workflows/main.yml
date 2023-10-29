@@ -1,25 +1,10 @@
-
-            
 on:
   push:
     branches: ["main", "dev"]
 jobs:  
   run-server:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
-      - uses: actions/checkout@v2
-      - name: Setup Alpine Linux environment
-        uses: jirutka/setup-alpine@v1.1.4
-      - name: Run script inside Alpine chroot as root
-        run: |
-          cat /etc/alpine-release
-          apk add nodejs npm
-        shell: alpine.sh --root {0}
-      - name: Run script inside Alpine chroot as the default user (unprivileged)
-        run: |
-            ls -la  # as you would expect, you're in your workspace directory
-            npm install
-            pm2 restart buysellno
-        shell: alpine.sh {0}
-    
-
+    - uses: actions/checkout@v2
+    - run: npm install
+    - run: pm2 restart buysellnow
