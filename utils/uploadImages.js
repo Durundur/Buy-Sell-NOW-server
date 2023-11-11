@@ -1,4 +1,4 @@
-const cloudinary = require('cloudinary').v2
+const cloudinary = require('cloudinary').v2;
 cloudinary.config({
     cloud_name: 'dj16gqjts',
     api_key: '886367423267998',
@@ -6,19 +6,22 @@ cloudinary.config({
     secure: true
   })
 
-const uploadImages = async (filesToUpload, advertId) => {
+const uploadImages = async (filesToUpload, publicId) => {
     const urls = {};
     for(let key in filesToUpload){
-        const fileIndex = key.split('.')[1];
         try {
-            const result = await cloudinary.uploader.upload(filesToUpload[key].path, {public_id: `${advertId}.${fileIndex}`, overwrite: true, upload_preset: 'gtu733xq'});
-            urls[`images.${fileIndex}`] = result.url;
+            const result = await cloudinary.uploader.upload(filesToUpload[key].path, {public_id: `${publicId}.${key}`, overwrite: true, upload_preset: 'gtu733xq'});
+            console.log(result);
+            if(key.includes('image')){
+                urls[`images.${key.split('.')[1]}`] = result.url;
+            }else{
+                urls[key] = result.url;
+            }
         } catch (error) {
             console.error(error);
         }
     }
     return urls
-    
 }
 
 module.exports = uploadImages

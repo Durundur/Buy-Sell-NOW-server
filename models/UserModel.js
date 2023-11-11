@@ -41,6 +41,12 @@ const UserSchema = new mongoose.Schema({
             },
             state: {
                 type: String
+            },
+            lat: {
+                type: Number
+            },
+            lon: {
+                type: Number
             }
         }
 

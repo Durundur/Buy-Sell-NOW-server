@@ -4,7 +4,7 @@ const ensureAuthenticated = (req,res, next)=> {
 		next()
 	}
 	else {
-		res.status(401).send({message: 'You are not authenticated', redirect: '/logowanie'})
+		res.status(401).send({status: 401, success: false, message: 'You are not authenticated', redirect: '/logowanie'})
 	}
 }	
 
