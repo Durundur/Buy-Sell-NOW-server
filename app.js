@@ -9,18 +9,21 @@ const mongoose = require('mongoose');
 const { Server } = require('socket.io');
 require('dotenv').config();
 
-const adsRoutes = require('./routes/api/v1/ads');
+const advertRoutes = require('./routes/api/v1/advert');
+const advertsRoutes = require('./routes/api/v1/adverts');
 const authRoutes = require('./routes/api/v1/auth');
 const conversationsRoutes = require('./routes/api/v1/conversations');
-const errorHandler = require('./utils/errorHandler');
+const conversationRoutes = require('./routes/api/v1/conversation');
 const settingsRoutes = require('./routes/api/v1/settings');
+const userRoutes = require('./routes/api/v1/user');
+
 const ConversationChatModel = require('./models/ConversationChatModel');
 const ConversationModel = require('./models/ConversationModel');
 
 const app = express();
 const PORT = process.env.PORT || 7000 || $PORT;
 
-
+const errorHandler = require('./utils/errorHandler');
 
 app.use(express.static('static'));
 app.use(cors({ origin: ["https://buysellnow.netlify.app", "http://localhost:3000"], credentials: true }));
@@ -43,8 +46,8 @@ app.use(session({
     name: 'session_id',
     cookie: {
         maxAge: 60 * 60 * 1000 * 24,
-        sameSite: 'none',
-        secure: true,
+        // sameSite: 'none',
+        // secure: true,
     },
     store: MongoStore.create({
         client: mongoose.connection.getClient(),
@@ -56,10 +59,13 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 
-app.use('/api/v1/ads', adsRoutes);
+app.use('/api/v1/advert', advertRoutes);
+app.use('/api/v1/adverts', advertsRoutes);
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/conversations', conversationsRoutes);
-app.use('/api/v1/settings/', settingsRoutes);
+app.use('/api/v1/conversation', conversationRoutes);
+app.use('/api/v1/settings', settingsRoutes);
+app.use('/api/v1/user', userRoutes);
 
 
 const io = new Server(server, {

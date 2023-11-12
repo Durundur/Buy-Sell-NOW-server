@@ -2,7 +2,8 @@ const express = require('express');
 const router = express.Router();
 const ensureAuthenticated = require('../../../utils/ensureAuthenticated');
 const UserModel = require('../../../models/UserModel');
-const uploadImages = require('../../../utils/uploadImages');
+const cloudinary = require('../../../utils/uploadImages');
+const formidableMiddleware = require('express-formidable');
 
 router.get('/general-info', ensureAuthenticated, async function (req, res, next) {
 	let requestUserId = req.session.passport.user.toString();
@@ -36,20 +37,34 @@ router.put('/change-password', ensureAuthenticated, async function (req, res, ne
 	}
 });
 
-const formidableMiddleware = require('express-formidable');
+
 router.post('/change-images', ensureAuthenticated, formidableMiddleware(), async function (req, res, next) {
 	let requestUserId = req.session.passport.user.toString();
 	try {
 		const user = await UserModel.findById(requestUserId);
-		const urls = await uploadImages(req.files, requestUserId);
-		if(urls.avatar){
-			user.avatar = urls.avatar;
+		const files = req.files;
+		const fields = req.fields
+		if (Object.keys(fields).length > 0) {
+			for (const field in fields) {
+				if (fields[field] === '') {
+					const res = await cloudinary.deleteImage(`${requestUserId}.${field}`);
+					if (res.result === 'ok') {
+						user[field] = null;
+					}
+				}
+				if (user[field] === fields[field]) {
+					continue;
+				}
+			}
 		}
-		if(urls.banner){
-			user.banner = urls.banner;
+		if (Object.keys(files).length > 0) {
+			const urls = await cloudinary.uploadImages(files, requestUserId);
+			Object.keys(urls).map((url) => {
+				user[url] = urls[url];
+			})
 		}
 		const updatedUser = await user.save();
-		res.status(200).send({ data: {avarar: updatedUser.avatar, banner: updatedUser.banner}, message: 'Images has been successfully changed', success: true, status: 200 });
+		res.status(200).send({ data: { avarar: updatedUser.avatar, banner: updatedUser.banner }, message: 'Images has been successfully changed', success: true, status: 200 });
 	} catch (error) {
 		return next(error);
 	}
