@@ -11,7 +11,6 @@ const uploadImages = async (filesToUpload, publicId) => {
     for (let key in filesToUpload) {
         try {
             const result = await cloudinary.uploader.upload(filesToUpload[key].path, { public_id: `${publicId}.${key}`, overwrite: true, upload_preset: 'gtu733xq' });
-            console.log(result);
             if (key.includes('image')) {
                 urls[`images.${key.split('.')[1]}`] = result.url;
             } else {

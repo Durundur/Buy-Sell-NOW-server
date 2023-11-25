@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const ensureAuthenticated = require('../../../utils/ensureAuthenticated');
 const UserModel = require('../../../models/UserModel');
-const uploadImages = require('../../../utils/uploadImages');
+const imagesApi = require('../../../utils/imagesApi');
 
 router.get('/general-info', ensureAuthenticated, async function (req, res, next) {
 	let requestUserId = req.session.passport.user.toString();
@@ -41,12 +41,22 @@ router.post('/change-images', ensureAuthenticated, formidableMiddleware(), async
 	let requestUserId = req.session.passport.user.toString();
 	try {
 		const user = await UserModel.findById(requestUserId);
-		const urls = await uploadImages(req.files, requestUserId);
-		if(urls.avatar){
-			user.avatar = urls.avatar;
+		const fields = req.fields;
+		const files = req.files;
+		if(Object.keys(files).length > 0){
+			const urls = await imagesApi.uploadImages(files, requestUserId);
+			for(let key in urls){
+				user[key] = urls[key];
+			}
 		}
-		if(urls.banner){
-			user.banner = urls.banner;
+		for(let key in fields){
+			if(fields[key] === '' || fields[key] === undefined || fields[key] === null){
+				await imagesApi.deleteImage(`${requestUserId}.${key}`);
+				user[key] = null;
+			}
+			else{
+				user[key] = fields[key];
+			}
 		}
 		const updatedUser = await user.save();
 		res.status(200).send({ data: {avarar: updatedUser.avatar, banner: updatedUser.banner}, message: 'Images has been successfully changed', success: true, status: 200 });

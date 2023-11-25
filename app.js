@@ -56,7 +56,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 
-app.use('/api/v1/ads', adsRoutes);
+app.use('/api/v1/adverts', adsRoutes);
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/conversations', conversationsRoutes);
 app.use('/api/v1/settings/', settingsRoutes);

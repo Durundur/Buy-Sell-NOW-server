@@ -5,7 +5,7 @@ const ensureAuthenticated = require('../../../utils/ensureAuthenticated')
 const mongoose = require("mongoose");
 const UserModel = require('../../../models/UserModel');
 const ADS_PER_PAGE = 5;
-const uploadImages = require('../../../utils/uploadImages')
+const imagesApi = require('../../../utils/imagesApi')
 
 const formidableMiddleware = require('express-formidable');
 
@@ -176,7 +176,7 @@ router.put('/:id', ensureAuthenticated, formidableMiddleware(), async function (
     const ad = await AdModel.findById(req.params.id);
     if (ad.advertiser._id.toString() === requestUserId) {
       const filesToUpload = req.files;
-      const uploadedFilesUrls = await uploadImages(filesToUpload, req.fields._id);
+      const uploadedFilesUrls = await imagesApi.uploadImages(filesToUpload, req.fields._id);
       const updatedAd = await AdModel.findByIdAndUpdate(req.params.id, { $set: {...req.fields, ...uploadedFilesUrls} }, { new: true });
       res.status(200).send({ ad: updatedAd, redirect: `/ogloszenie/${req.params.id}` });
     } else {
@@ -209,7 +209,7 @@ router.post('/', ensureAuthenticated, formidableMiddleware(), async function (re
   let requestUserId = req.session.passport.user.toString();
   const newAd = new AdModel();
   const filesToUpload = req.files;
-  const uploadedFilesUrls = await uploadImages(filesToUpload, newAd._id);
+  const uploadedFilesUrls = await imagesApi.uploadImages(filesToUpload, newAd._id);
   newAd.$set({...req.fields, ...uploadedFilesUrls});
   newAd.advertiser._id = requestUserId;
   try {
