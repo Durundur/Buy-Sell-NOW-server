@@ -20,8 +20,6 @@ const ConversationModel = require('./models/ConversationModel');
 const app = express();
 const PORT = process.env.PORT || 7000 || $PORT;
 
-
-
 app.use(express.static('static'));
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());

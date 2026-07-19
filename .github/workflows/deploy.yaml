@@ -1,0 +1,35 @@
+name: Trigger deploy
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  trigger-deploy-runner:
+    name: Trigger deploy runner
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send event to deploy runner
+        run: |
+          curl -L \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.DEPLOY_RUNNER_TOKEN }}" \
+            -H "X-GitHub-Api-Version: 2026-03-10" \
+            https://api.github.com/repos/Durundur/durun-env/dispatches \
+            -d '{
+              "event_type": "deploy-application",
+              "client_payload": {
+                "repository": "${{ github.repository }}",
+                "ref": "${{ github.ref }}",
+                "app_name": "${{ github.event.repository.name }}",
+                "deploy_target": "oracle1",
+                "host_port": "51886",
+                "container_port": "8080",
+                "env_variables": {
+                  "DB_URL": ${{ secrets.DB_URL }},
+                  "COOKIE_SECRET": ${{ secrets.COOKIE_SECRET }},
+                  "PORT": 8080
+                }
+              }
+            }'

@@ -1,11 +1,11 @@
-FROM node:alpine
+FROM node:20-alpine
 
-WORKDIR /usr/buy-sell-now-api
+WORKDIR /app
 
-COPY ["package*.json","./"]
+COPY . .
 
 RUN npm install
 
-COPY ./ ./
+EXPOSE 8080
 
 CMD ["npm", "start"]
