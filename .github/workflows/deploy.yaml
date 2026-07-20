@@ -28,8 +28,7 @@ jobs:
                 "container_port": "8080",
                 "env_variables": {
                   "DB_URL": "${{ secrets.DB_URL }}",
-                  "COOKIE_SECRET": "${{ secrets.COOKIE_SECRET }}",
-                  "PORT": "8080"
+                  "COOKIE_SECRET": "${{ secrets.COOKIE_SECRET }}"
                 }
               }
             }'
